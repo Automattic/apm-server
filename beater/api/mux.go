@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"regexp"
+	"strconv"
 
 	"github.com/pkg/errors"
 
@@ -330,14 +331,25 @@ func firehoseMiddleware(cfg *config.Config, m map[request.ResultID]*monitoring.I
 	return firehoseMiddleware
 }
 
+func getAtomic(c *request.Context) model.Atomic {
+	var atomic model.Atomic
+	if siteid, err := strconv.ParseInt(c.AtomicSiteID, 10, 64); err != nil && siteid > 0 {
+		atomic.SiteID = siteid
+	}
+	return atomic
+}
+
 func emptyRequestMetadata(c *request.Context) model.APMEvent {
-	return model.APMEvent{}
+	return model.APMEvent{
+		Atomic: getAtomic(c),
+	}
 }
 
 func backendRequestMetadata(c *request.Context) model.APMEvent {
-	return model.APMEvent{Host: model.Host{
-		IP: c.ClientIP,
-	}}
+	return model.APMEvent{
+		Atomic: getAtomic(c),
+		Host:   model.Host{IP: c.ClientIP},
+	}
 }
 
 func rumRequestMetadata(c *request.Context) model.APMEvent {
@@ -347,6 +359,7 @@ func rumRequestMetadata(c *request.Context) model.APMEvent {
 		source.Port = tcpAddr.Port
 	}
 	return model.APMEvent{
+		Atomic:    getAtomic(c),
 		Client:    model.Client{IP: c.ClientIP},
 		Source:    source,
 		UserAgent: model.UserAgent{Original: c.UserAgent},

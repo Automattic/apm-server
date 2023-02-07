@@ -60,6 +60,9 @@ type Context struct {
 	// UserAgent holds the User-Agent request header value.
 	UserAgent string
 
+	// AtomicSiteID holds the x-atomic-site request header value.
+	AtomicSiteID string
+
 	w             http.ResponseWriter
 	writeAttempts int
 }
@@ -92,6 +95,7 @@ func (c *Context) Reset(w http.ResponseWriter, r *http.Request) {
 		c.SourceAddr = utility.ParseTCPAddr(r.RemoteAddr)
 		c.ClientIP = utility.ExtractIP(r)
 		c.UserAgent = utility.UserAgentHeader(r.Header)
+		c.AtomicSiteID = utility.AtomicSiteHeader(r.Header)
 	}
 }
 
