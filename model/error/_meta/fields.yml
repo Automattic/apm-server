@@ -3,12 +3,6 @@
   description: Error-specific data for APM
   fields:
 
-    - name: _routing
-      type: keyword
-      count: 1
-      description: Routing for doc based on Atomic Site ID
-      overwrite: true
-
     - name: atomic
       type: group
       fields:
