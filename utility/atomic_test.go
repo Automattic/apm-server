@@ -19,12 +19,25 @@
 // Automattic customization for Atomic APM
 //
 
-package utility
+package utility_test
 
 import (
 	"net/http"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/elastic/apm-server/utility"
 )
 
-func AtomicSiteHeader(header http.Header) string {
-	return header.Get("x-atomic-site")
+func TestAtomicSite(t *testing.T) {
+	req := &http.Request{
+		Header: make(http.Header),
+	}
+
+	// No site id header
+	assert.Equal(t, "", utility.AtomicSiteHeader(req.Header))
+
+	req.Header.Set("x-atomic-site", "123")
+	assert.Equal(t, "123", utility.AtomicSiteHeader(req.Header))
 }
