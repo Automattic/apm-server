@@ -26,5 +26,18 @@ import (
 )
 
 func AtomicSiteHeader(header http.Header) string {
-	return header.Get("x-atomic-site")
+	key := "x-atomic-site"
+
+	if v := header.Get(key); v != "" {
+		return v
+	}
+
+	// header.Get() internally canonicalizes key names, but metadata.Pairs uses
+	// lowercase keys and returns arrays of values. Using the lowercase key
+	// names and only returning the first item allows this function to be used
+	// for gRPC metadata.
+	if v, ok := header[key]; ok && len(v) > 0 {
+		return v[0]
+	}
+	return ""
 }

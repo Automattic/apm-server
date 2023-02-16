@@ -66,6 +66,9 @@ func TestClientMetadata(t *testing.T) {
 	}, {
 		metadata: metadata.Pairs("User-Agent", "User-Agent"),
 		expected: ClientMetadataValues{UserAgent: "User-Agent"},
+	}, {
+		metadata: metadata.Pairs("x-atomic-site", "1234"),
+		expected: ClientMetadataValues{AtomicSiteID: "1234"},
 	}} {
 		ctx := context.Background()
 		if test.peer != nil {
