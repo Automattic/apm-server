@@ -227,6 +227,15 @@ func TestDecodeMapToTransactionModel(t *testing.T) {
 		assert.Equal(t, randomIP.String(), out.Client.IP.String())
 	})
 
+	t.Run("atomic-site-header", func(t *testing.T) {
+		var input transaction
+		var out model.APMEvent
+		input.Context.Request.Headers.Set(http.Header{})
+		input.Context.Request.Headers.Val.Add("x-atomic-site", "12345")
+		mapToTransactionModel(&input, &out)
+		assert.Equal(t, int64(12345), out.Atomic.SiteID)
+	})
+
 	t.Run("overwrite-user", func(t *testing.T) {
 		// user should be populated by metadata or event specific, but not merged
 		var input transaction

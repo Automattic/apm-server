@@ -1068,6 +1068,9 @@ func mapToTransactionModel(from *transaction, event *model.APMEvent) {
 	event.Processor = model.TransactionProcessor
 	event.Transaction = out
 
+	// Atomic custom data
+	mapToAtomicModel(from.Context.Request.Headers, &event.Atomic)
+
 	// overwrite metadata with event specific information
 	mapToServiceModel(from.Context.Service, &event.Service)
 	mapToAgentModel(from.Context.Service.Agent, &event.Agent)
@@ -1302,6 +1305,16 @@ func mapOTelAttributesSpan(from otel, out *model.APMEvent) {
 			out.Span.Kind = "CLIENT"
 		default:
 			out.Span.Kind = "INTERNAL"
+		}
+	}
+}
+
+func mapToAtomicModel(from nullable.HTTPHeader, out *model.Atomic) {
+	if from.IsSet() {
+		if h := from.Val.Values("x-atomic-site"); len(h) > 0 {
+			if siteid, err := strconv.ParseInt(h[0], 10, 64); err == nil && siteid > 0 {
+				out.SiteID = siteid
+			}
 		}
 	}
 }
