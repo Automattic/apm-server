@@ -511,7 +511,7 @@ func TestServerConfigReload(t *testing.T) {
 		},
 	})}})
 	require.Error(t, err)
-	assert.Regexp(t, "listen tcp: lookup testing.invalid: .*", err.Error())
+	assert.Regexp(t, "listen tcp: lookup testing.invalid .*", err.Error())
 
 	inputConfig := common.MustNewConfigFrom(map[string]interface{}{
 		"apm-server": map[string]interface{}{
