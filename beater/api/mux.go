@@ -333,7 +333,7 @@ func firehoseMiddleware(cfg *config.Config, m map[request.ResultID]*monitoring.I
 
 func getAtomic(c *request.Context) model.Atomic {
 	var atomic model.Atomic
-	if siteid, err := strconv.ParseInt(c.AtomicSiteID, 10, 64); err != nil && siteid > 0 {
+	if siteid, err := strconv.ParseInt(c.AtomicSiteID, 10, 64); err == nil && siteid > 0 {
 		atomic.SiteID = siteid
 	}
 	return atomic
