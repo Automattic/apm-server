@@ -161,7 +161,6 @@ func TestModelIndexerEncoding(t *testing.T) {
 		"data_stream.namespace": "testing",
 	}, {
 		"@timestamp": "1970-01-01T00:02:03.789Z",
-		"_routing":   "123",
 		"atomic": map[string]interface{}{
 			"site_id": float64(123),
 		},

@@ -74,6 +74,7 @@ type BulkIndexerItem struct {
 	Index           string
 	Action          string
 	DocumentID      string
+	Routing         string
 	Body            io.Reader
 	RetryOnConflict *int
 
@@ -96,6 +97,7 @@ func (b v7BulkIndexer) Add(ctx context.Context, item BulkIndexerItem) error {
 		Index:           item.Index,
 		Action:          item.Action,
 		DocumentID:      item.DocumentID,
+		Routing:         item.Routing,
 		Body:            item.Body,
 		RetryOnConflict: item.RetryOnConflict,
 	}
@@ -125,6 +127,7 @@ func (b v8BulkIndexer) Add(ctx context.Context, item BulkIndexerItem) error {
 		Index:           item.Index,
 		Action:          item.Action,
 		DocumentID:      item.DocumentID,
+		Routing:         item.Routing,
 		Body:            item.Body,
 		RetryOnConflict: item.RetryOnConflict,
 	}

@@ -19,7 +19,6 @@ package model
 
 import (
 	"context"
-	"strconv"
 	"time"
 
 	"github.com/elastic/beats/v7/libbeat/beat"
@@ -151,9 +150,6 @@ func (e *APMEvent) BeatEvent(ctx context.Context) beat.Event {
 	fields.maybeSetMapStr("http", e.HTTP.fields())
 	fields.maybeSetMapStr("faas", e.FAAS.fields())
 	fields.maybeSetMapStr("atomic", e.Atomic.fields())
-	if e.Atomic.SiteID > 0 {
-		fields.set("_routing", strconv.FormatInt(e.Atomic.SiteID, 10))
-	}
 	if e.Processor == SpanProcessor {
 		// Deprecated: copy url.original and http.* to span.http.* for backwards compatibility.
 		//

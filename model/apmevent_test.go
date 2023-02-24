@@ -194,7 +194,6 @@ func TestAPMEventFields(t *testing.T) {
 			Atomic: Atomic{SiteID: 123},
 		},
 		output: common.MapStr{
-			"_routing": "123",
 			"atomic":   common.MapStr{"site_id": int64(123)},
 		},
 	}} {
