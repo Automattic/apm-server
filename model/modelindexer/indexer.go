@@ -23,7 +23,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -238,15 +237,10 @@ func (i *Indexer) processEvent(ctx context.Context, event *model.APMEvent) error
 		})
 	}
 
-	routing := ""
-	if event.Atomic.SiteID > 0 {
-		routing = strconv.FormatInt(event.Atomic.SiteID, 10)
-	}
 	if err := i.active.Add(elasticsearch.BulkIndexerItem{
-		Index:   index,
-		Action:  "create",
-		Routing: routing,
-		Body:    r,
+		Index:  index,
+		Action: "create",
+		Body:   r,
 	}); err != nil {
 		return err
 	}
