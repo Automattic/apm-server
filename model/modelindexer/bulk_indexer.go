@@ -120,8 +120,15 @@ func (b *bulkIndexer) writeMeta(item elasticsearch.BulkIndexerItem) {
 		b.jsonw.RawString(`"_id":`)
 		b.jsonw.String(item.DocumentID)
 	}
-	if item.Index != "" {
+	if item.Routing != "" {
 		if item.DocumentID != "" {
+			b.jsonw.RawByte(',')
+		}
+		b.jsonw.RawString(`"routing":`)
+		b.jsonw.String(item.Routing)
+	}
+	if item.Index != "" {
+		if item.DocumentID != "" || item.Routing != "" {
 			b.jsonw.RawByte(',')
 		}
 		b.jsonw.RawString(`"_index":`)
