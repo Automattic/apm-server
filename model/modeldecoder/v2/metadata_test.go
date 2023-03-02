@@ -39,6 +39,8 @@ func isMetadataException(key string) bool {
 func isUnmappedMetadataField(key string) bool {
 	switch key {
 	case
+		"Atomic",
+		"Atomic.SiteID",
 		"Child",
 		"Child.ID",
 		"Client.Domain",

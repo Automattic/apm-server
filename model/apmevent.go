@@ -60,6 +60,9 @@ type APMEvent struct {
 	HTTP        HTTP
 	FAAS        FAAS
 
+	// A8C: Add an optional Atomic struct for Atomic specific data
+	Atomic Atomic
+
 	// Timestamp holds the event timestamp.
 	//
 	// See https://www.elastic.co/guide/en/ecs/current/ecs-base.html
@@ -146,6 +149,7 @@ func (e *APMEvent) BeatEvent(ctx context.Context) beat.Event {
 	fields.maybeSetString("message", e.Message)
 	fields.maybeSetMapStr("http", e.HTTP.fields())
 	fields.maybeSetMapStr("faas", e.FAAS.fields())
+	fields.maybeSetMapStr("atomic", e.Atomic.fields())
 	if e.Processor == SpanProcessor {
 		// Deprecated: copy url.original and http.* to span.http.* for backwards compatibility.
 		//

@@ -2,6 +2,16 @@
   title: APM Profile
   description: Profiling-specific data for APM.
   fields:
+
+    - name: atomic
+      type: group
+      fields:
+        - name: site_id
+          type: long
+          count: 1
+          description: Atomic Site ID for this doc
+          overwrite: true
+
     - name: processor.name
       type: keyword
       description: Processor name.

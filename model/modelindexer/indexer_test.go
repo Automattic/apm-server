@@ -141,6 +141,11 @@ func TestModelIndexerEncoding(t *testing.T) {
 			Dataset:   "apm_server",
 			Namespace: "testing",
 		},
+	}, {
+		Timestamp: time.Unix(123, 789111111).UTC(),
+		Atomic: model.Atomic{
+			SiteID: 123,
+		},
 	}}
 	err = indexer.ProcessBatch(context.Background(), &batch)
 	require.NoError(t, err)
@@ -154,6 +159,11 @@ func TestModelIndexerEncoding(t *testing.T) {
 		"data_stream.type":      "logs",
 		"data_stream.dataset":   "apm_server",
 		"data_stream.namespace": "testing",
+	}, {
+		"@timestamp": "1970-01-01T00:02:03.789Z",
+		"atomic": map[string]interface{}{
+			"site_id": float64(123),
+		},
 	}}, indexed)
 }
 

@@ -55,6 +55,9 @@ func ClientMetadata() grpc.UnaryServerInterceptor {
 			if ip := utility.ExtractIPFromHeader(http.Header(md)); ip != nil {
 				values.ClientIP = ip
 			}
+			if as := utility.AtomicSiteHeader(http.Header(md)); len(as) > 0 {
+				values.AtomicSiteID = as
+			}
 		}
 		ctx = context.WithValue(ctx, clientMetadataKey{}, values)
 		return handler(ctx, req)
@@ -88,4 +91,7 @@ type ClientMetadataValues struct {
 
 	// UserAgent holds the User-Agent for the gRPC client, if known.
 	UserAgent string
+
+	// AtomicSite holds the x-atomic-site request header value for the gRPC client, if known.
+	AtomicSiteID string
 }

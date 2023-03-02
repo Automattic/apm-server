@@ -189,6 +189,13 @@ func TestAPMEventFields(t *testing.T) {
 			// timestamp.us is added for transactions, spans, and errors.
 			"timestamp": common.MapStr{"us": 1546525024908596},
 		},
+	}, {
+		input: APMEvent{
+			Atomic: Atomic{SiteID: 123},
+		},
+		output: common.MapStr{
+			"atomic":   common.MapStr{"site_id": int64(123)},
+		},
 	}} {
 		event := test.input.BeatEvent(context.Background())
 		assert.Equal(t, test.output, event.Fields)
