@@ -25,7 +25,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -72,6 +71,15 @@ func Build() error {
 // GolangCrossBuild build the Beat binary inside of the golang-builder.
 // Do not use directly, use crossBuild instead.
 func GolangCrossBuild() error {
+	// beats/dev-tools sets the *beats* directory as a safe directory,
+	// we need to do the same for apm-server since we're out of tree.
+	repo, err := mage.GetProjectRepoInfo()
+	if err != nil {
+		panic(err)
+	}
+	if err := sh.Run("git", "config", "--global", "--add", "safe.directory", repo.RootDir); err != nil {
+		return err
+	}
 	return mage.GolangCrossBuild(mage.DefaultGolangCrossBuildArgs())
 }
 
@@ -263,14 +271,14 @@ func Fields() error {
 	if err != nil {
 		panic(err)
 	}
-	return ioutil.WriteFile(xpackFieldsInclude, assetData, 0644)
+	return os.WriteFile(xpackFieldsInclude, assetData, 0644)
 }
 
 func generateFieldsYAML(output string, modules ...string) error {
 	if err := mage.GenerateFieldsYAMLTo(output, modules...); err != nil {
 		return err
 	}
-	contents, err := ioutil.ReadFile(output)
+	contents, err := os.ReadFile(output)
 	if err != nil {
 		return err
 	}
@@ -313,7 +321,7 @@ func generateFieldsYAML(output string, modules ...string) error {
 			contents = append(contents[:i], contents[i+buf.Len():]...)
 		}
 	}
-	return ioutil.WriteFile(output, contents, 0644)
+	return os.WriteFile(output, contents, 0644)
 }
 
 // GoTestUnit runs the go test unit.
@@ -554,7 +562,7 @@ func Check() error {
 
 // PythonEnv ensures the Python venv is up-to-date with the beats requrements.txt.
 func PythonEnv() error {
-	_, err := mage.PythonVirtualenv()
+	_, err := mage.PythonVirtualenv(false)
 	return err
 }
 

@@ -1,0 +1,72 @@
+---
+name: Bump beats
+pipelineid: 'update-beats-{{ requiredEnv "BRANCH_NAME" }}'
+
+scms:
+  default:
+    kind: github
+    spec:
+      user: '{{ requiredEnv "GIT_USER" }}'
+      email: '{{ requiredEnv "GIT_EMAIL" }}'
+      owner: elastic
+      repository: apm-server
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      branch: '{{ requiredEnv "BRANCH_NAME" }}'
+
+actions:
+  default:
+    kind: github/pullrequest
+    scmid: default
+    spec:
+      automerge: false
+      labels:
+        - automation
+        - backport-skip
+
+sources:
+  beats:
+    kind: json
+    spec:
+      file: 'https://api.github.com/repos/elastic/beats/commits?sha={{ requiredEnv "BRANCH_NAME" }}&per_page=1'
+      key: '.[0].sha'
+    transformers:
+      # substring 12 chars so it works for the condition
+      - findsubmatch:
+          pattern: ^(.{12}).*
+          captureindex: 1
+
+conditions:
+  is:
+    name: Is version 'github.com/elastic/beats@{{ source "beats" }}' not updated in 'go.mod'?
+    kind: file
+    disablesourceinput: true
+    scmid: default
+    spec:
+      file: go.mod
+      matchpattern: 'github\.com/elastic/beats.*-{{ source "beats" }}'
+    failwhen: true
+
+
+conditions:
+  beats-version-check:
+    name: Check beats version
+    kind: shell
+    disablesourceinput: true
+    spec:
+      command: grep "BEATS_VERSION?={{ requiredEnv "BRANCH_NAME" }}" Makefile
+
+targets:
+  beats:
+    name: 'Update to elastic/beats@{{ source "beats" }}'
+    sourceid: beats
+    scmid: default
+    kind: shell
+    spec:
+      command: .ci/scripts/update-beats.sh
+      environments:
+        - name: PATH
+        - name: GOPATH
+        - name: HOME
+
+

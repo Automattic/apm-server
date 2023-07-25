@@ -189,7 +189,7 @@ update-beats: update-beats-module update
 
 .PHONY: update-beats-module
 update-beats-module:
-	$(GO) get -d -u $(BEATS_MODULE)@$(BEATS_VERSION) && $(GO) mod tidy -compat=1.17
+	$(GO) get -d $(BEATS_MODULE)@$(BEATS_VERSION) && $(GO) mod tidy -compat=1.17
 	cp -f $$($(GO) list -m -f {{.Dir}} $(BEATS_MODULE))/.go-version .go-version
 	find . -maxdepth 2 -name Dockerfile -exec sed -i'.bck' -E -e "s#(FROM golang):[0-9]+\.[0-9]+\.[0-9]+#\1:$$(cat .go-version)#g" {} \;
 	sed -i'.bck' -E -e "s#(:go-version): [0-9]+\.[0-9]+\.[0-9]+#\1: $$(cat .go-version)#g" docs/version.asciidoc
@@ -304,11 +304,11 @@ release-manager-snapshot: release
 release-manager-release: release
 
 .PHONY: release
-release: export PATH:=$(dir $(BIN_MAGE)):$(PATH)
+release: export PATH:=$(realpath $(dir $(BIN_MAGE))):$(PATH)
 release: $(MAGE) build/dependencies.csv
 	$(GO) mod download all
 	$(MAGE) package
 	@$(MAGE) ironbank
 
-build/dependencies.csv: $(PYTHON) go.mod
-	$(PYTHON) script/generate_notice.py ./x-pack/apm-server --csv $@
+build/dependencies.csv: go.mod
+	python3 script/generate_notice.py ./x-pack/apm-server --csv $@
